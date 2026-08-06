@@ -40,6 +40,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# generated sitemap (produced by next-sitemap at build time)
+# next-sitemap legacy output (sitemap now served via app/sitemap.ts)
 public/sitemap*.xml
 public/robots.txt
