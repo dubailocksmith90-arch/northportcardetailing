@@ -46,7 +46,7 @@ export const BUSINESS = {
     facebook: "https://www.facebook.com/northportcarwash",
   },
 
-  siteUrl: "https://www.northportcarwash.com",
+  siteUrl: "https://www.northportcardetailing.com",
 
   timezone: "America/New_York",
 } as const;
