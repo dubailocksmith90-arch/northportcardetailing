@@ -1,0 +1,31 @@
+{
+  "name": "North Port Car Wash",
+  "short_name": "NP Car Wash",
+  "description": "Touchless car wash, free vacuums, and professional detailing in North Port, FL on the Tamiami Trail.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0A0A0B",
+  "theme_color": "#00C2FF",
+  "lang": "en-US",
+  "categories": ["automotive", "local"],
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Get Directions",
+      "url": "https://www.google.com/maps/dir/?api=1&destination=14164+S+Tamiami+Trl+North+Port+FL+34287",
+      "description": "Navigate to North Port Car Wash"
+    },
+    {
+      "name": "Call Us",
+      "url": "tel:+19415646447",
+      "description": "Call North Port Car Wash"
+    }
+  ]
+}

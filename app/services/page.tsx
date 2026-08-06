@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { BUSINESS, WASH_SERVICES, DETAILING_PACKAGES } from "@/lib/business-config";
 import BreadcrumbSchema from "@/components/schema/BreadcrumbSchema";
+import LocalBusinessSchema from "@/components/schema/LocalBusinessSchema";
 
 export const metadata: Metadata = {
   title: "Car Wash & Detailing Services | North Port Car Wash",
@@ -33,10 +34,62 @@ const DETAILING_EXTERIOR = [
   { name: "Trim & Plastic Restoration", slug: "trim-restoration" },
 ];
 
+function ItemListSchema() {
+  const allServices = [
+    ...WASH_SERVICES.map((s, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: s.name,
+      description: s.description,
+      url: `${BUSINESS.siteUrl}/services/wash/${s.slug}`,
+    })),
+    ...DETAILING_PACKAGES.map((p, i) => ({
+      "@type": "ListItem",
+      position: WASH_SERVICES.length + i + 1,
+      name: p.name,
+      description: p.tagline,
+      url: `${BUSINESS.siteUrl}/services/detailing/${p.slug}`,
+    })),
+    ...DETAILING_INTERIOR.map((s, i) => ({
+      "@type": "ListItem",
+      position: WASH_SERVICES.length + DETAILING_PACKAGES.length + i + 1,
+      name: s.name,
+      url: `${BUSINESS.siteUrl}/services/detailing/${s.slug}`,
+    })),
+    ...DETAILING_EXTERIOR.map((s, i) => ({
+      "@type": "ListItem",
+      position:
+        WASH_SERVICES.length + DETAILING_PACKAGES.length + DETAILING_INTERIOR.length + i + 1,
+      name: s.name,
+      url: `${BUSINESS.siteUrl}/services/detailing/${s.slug}`,
+    })),
+  ];
+
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Car Wash & Detailing Services at North Port Car Wash",
+    description:
+      "Complete list of car wash and professional detailing services offered at North Port Car Wash in North Port, FL.",
+    url: `${BUSINESS.siteUrl}/services`,
+    numberOfItems: allServices.length,
+    itemListElement: allServices,
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  );
+}
+
 export default function ServicesHubPage() {
   return (
     <>
+      <LocalBusinessSchema />
       <BreadcrumbSchema items={[{ name: "Services", href: "/services" }]} />
+      <ItemListSchema />
 
       <div className="pt-24 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         {/* Header */}

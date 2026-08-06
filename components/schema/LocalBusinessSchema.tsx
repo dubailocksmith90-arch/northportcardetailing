@@ -25,15 +25,38 @@ export default function LocalBusinessSchema({ areaServed, additionalType }: Prop
       closes: h.close,
     }));
 
+  const defaultAreaServed = [
+    "North Port, FL",
+    "Port Charlotte, FL",
+    "Venice, FL",
+    "Englewood, FL",
+    "Punta Gorda, FL",
+    "Sarasota, FL",
+    "Osprey, FL",
+    "Nokomis, FL",
+  ];
+
   const schema = {
     "@context": "https://schema.org",
     "@type": ["LocalBusiness", "AutomotiveBusiness"],
+    "@id": `${BUSINESS.siteUrl}/#localbusiness`,
     ...(additionalType ? { additionalType } : {}),
     name: BUSINESS.name,
+    alternateName: ["North Port Car Wash & Detailing", "North Port Car Wash FL"],
+    legalName: BUSINESS.legalName,
     description: BUSINESS.description,
     url: BUSINESS.siteUrl,
     telephone: BUSINESS.phone.e164,
     priceRange: BUSINESS.priceRange,
+    image: {
+      "@type": "ImageObject",
+      "@id": `${BUSINESS.siteUrl}/#logo`,
+      url: `${BUSINESS.siteUrl}/og-default.jpg`,
+      width: 1200,
+      height: 630,
+      caption: "North Port Car Wash — Tamiami Trail, North Port, FL",
+    },
+    logo: `${BUSINESS.siteUrl}/og-default.jpg`,
     address: {
       "@type": "PostalAddress",
       streetAddress: BUSINESS.address.street,
@@ -47,32 +70,124 @@ export default function LocalBusinessSchema({ areaServed, additionalType }: Prop
       latitude: BUSINESS.geo.latitude,
       longitude: BUSINESS.geo.longitude,
     },
+    // 50-mile service radius centered on the business
+    serviceArea: {
+      "@type": "GeoCircle",
+      geoMidpoint: {
+        "@type": "GeoCoordinates",
+        latitude: BUSINESS.geo.latitude,
+        longitude: BUSINESS.geo.longitude,
+      },
+      geoRadius: "80000",
+    },
     aggregateRating: {
       "@type": "AggregateRating",
       ratingValue: BUSINESS.rating.value,
       reviewCount: BUSINESS.rating.count,
       bestRating: BUSINESS.rating.max,
+      worstRating: 1,
     },
     review: REVIEWS.slice(0, 3).map((r) => ({
       "@type": "Review",
       author: { "@type": "Person", name: r.author },
-      reviewRating: { "@type": "Rating", ratingValue: r.rating, bestRating: 5 },
+      reviewRating: { "@type": "Rating", ratingValue: r.rating, bestRating: 5, worstRating: 1 },
       datePublished: r.date,
       reviewBody: r.text,
+      publisher: { "@type": "Organization", name: "Google" },
     })),
-    openingHoursSpecification: openingHoursSpec,
-    areaServed: areaServed ?? [
-      "North Port, FL",
-      "Port Charlotte, FL",
-      "Venice, FL",
-      "Englewood, FL",
-      "Punta Gorda, FL",
-      "Sarasota, FL",
+    openingHoursSpecification: [
+      ...openingHoursSpec,
+      // Touchless bay is 24/7
+      {
+        "@type": "OpeningHoursSpecification",
+        name: "Touchless Wash Bay",
+        dayOfWeek: [
+          "https://schema.org/Monday",
+          "https://schema.org/Tuesday",
+          "https://schema.org/Wednesday",
+          "https://schema.org/Thursday",
+          "https://schema.org/Friday",
+          "https://schema.org/Saturday",
+          "https://schema.org/Sunday",
+        ],
+        opens: "00:00",
+        closes: "23:59",
+      },
     ],
+    areaServed: (areaServed ?? defaultAreaServed).map((area) => ({
+      "@type": "City",
+      name: area,
+    })),
+    knowsAbout: [
+      "car wash",
+      "touchless car wash",
+      "car detailing",
+      "ceramic coating",
+      "paint correction",
+      "paint sealant",
+      "interior detailing",
+      "exterior detailing",
+      "car waxing",
+      "fleet detailing",
+      "unlimited car wash membership",
+    ],
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: "Car Wash & Detailing Services",
+      itemListElement: [
+        {
+          "@type": "Offer",
+          itemOffered: {
+            "@type": "Service",
+            name: "Touchless Car Wash",
+            url: `${BUSINESS.siteUrl}/services/wash/touchless-car-wash`,
+          },
+        },
+        {
+          "@type": "Offer",
+          itemOffered: {
+            "@type": "Service",
+            name: "Unlimited Wash Membership",
+            url: `${BUSINESS.siteUrl}/services/wash/unlimited-wash-plans`,
+          },
+        },
+        {
+          "@type": "Offer",
+          itemOffered: {
+            "@type": "Service",
+            name: "Ceramic Coating",
+            url: `${BUSINESS.siteUrl}/services/detailing/ceramic-coating`,
+          },
+        },
+        {
+          "@type": "Offer",
+          itemOffered: {
+            "@type": "Service",
+            name: "Full Detail Package",
+            url: `${BUSINESS.siteUrl}/services/detailing/full-detail-package`,
+          },
+        },
+        {
+          "@type": "Offer",
+          itemOffered: {
+            "@type": "Service",
+            name: "Paint Correction",
+            url: `${BUSINESS.siteUrl}/services/detailing/paint-correction`,
+          },
+        },
+      ],
+    },
     sameAs: [BUSINESS.social.googleBusinessProfile, BUSINESS.social.facebook],
     hasMap: BUSINESS.mapUrl,
     paymentAccepted: "Cash, Credit Card, Debit Card",
     currenciesAccepted: "USD",
+    isAccessibleForFree: false,
+    amenityFeature: [
+      { "@type": "LocationFeatureSpecification", name: "Free Vacuum Stations", value: true },
+      { "@type": "LocationFeatureSpecification", name: "24/7 Touchless Bay", value: true },
+      { "@type": "LocationFeatureSpecification", name: "Drive-Through Tunnel", value: true },
+      { "@type": "LocationFeatureSpecification", name: "Professional Detailing", value: true },
+    ],
   };
 
   return (

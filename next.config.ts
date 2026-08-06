@@ -1,6 +1,11 @@
 import type { NextConfig } from "next";
+import path from "path";
 
 const nextConfig: NextConfig = {
+  // Fix Turbopack root resolution when package-lock.json lives outside the git repo
+  turbopack: {
+    root: path.resolve(__dirname),
+  },
   images: {
     remotePatterns: [
       {
@@ -13,6 +18,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-};
+} as NextConfig;
 
 export default nextConfig;

@@ -5,18 +5,35 @@ interface Props {
   description: string;
   url: string;
   serviceType?: string;
+  duration?: string;
 }
 
-export default function ServiceSchema({ name, description, url, serviceType }: Props) {
+const SERVICE_AREAS = [
+  "North Port, FL",
+  "Port Charlotte, FL",
+  "Venice, FL",
+  "Englewood, FL",
+  "Punta Gorda, FL",
+  "Sarasota, FL",
+  "Osprey, FL",
+  "Nokomis, FL",
+];
+
+export default function ServiceSchema({ name, description, url, serviceType, duration }: Props) {
+  const fullUrl = `${BUSINESS.siteUrl}${url}`;
+
   const schema = {
     "@context": "https://schema.org",
     "@type": "Service",
+    "@id": `${fullUrl}/#service`,
     name,
     description,
-    url: `${BUSINESS.siteUrl}${url}`,
+    url: fullUrl,
     serviceType: serviceType ?? "AutomotiveService",
+    category: "Automotive",
     provider: {
       "@type": "LocalBusiness",
+      "@id": `${BUSINESS.siteUrl}/#localbusiness`,
       name: BUSINESS.name,
       telephone: BUSINESS.phone.e164,
       address: {
@@ -27,12 +44,43 @@ export default function ServiceSchema({ name, description, url, serviceType }: P
         postalCode: BUSINESS.address.zip,
         addressCountry: BUSINESS.address.country,
       },
+      geo: {
+        "@type": "GeoCoordinates",
+        latitude: BUSINESS.geo.latitude,
+        longitude: BUSINESS.geo.longitude,
+      },
+      openingHoursSpecification: {
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: [
+          "https://schema.org/Monday",
+          "https://schema.org/Tuesday",
+          "https://schema.org/Wednesday",
+          "https://schema.org/Thursday",
+          "https://schema.org/Friday",
+          "https://schema.org/Saturday",
+          "https://schema.org/Sunday",
+        ],
+        opens: "07:00",
+        closes: "19:00",
+      },
     },
-    areaServed: {
+    areaServed: SERVICE_AREAS.map((area) => ({
       "@type": "City",
-      name: "North Port",
-      containedInPlace: { "@type": "State", name: "Florida" },
-    },
+      name: area,
+    })),
+    ...(duration
+      ? {
+          offers: {
+            "@type": "Offer",
+            priceSpecification: {
+              "@type": "PriceSpecification",
+              priceCurrency: "USD",
+            },
+            availability: "https://schema.org/InStock",
+            validFrom: "2024-01-01",
+          },
+        }
+      : {}),
   };
 
   return (
